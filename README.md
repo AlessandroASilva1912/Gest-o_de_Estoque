@@ -312,15 +312,3 @@ Contribuições são bem-vindas!
 - [ ] Histórico de alterações de preço por produto
 - [ ] Gráfico de composição do estoque por categoria
 
----
-
-## 📄 Licença
-
-Distribuído sob a licença **MIT**. Veja o arquivo [`LICENSE`](LICENSE) para mais informações.
-
----
-
-<div align="center">
-  <strong>StockPro v2.0</strong> · Python + Flask + SQLite · 2024<br>
-  Se este projeto te ajudou, deixa uma ⭐
-</div>
