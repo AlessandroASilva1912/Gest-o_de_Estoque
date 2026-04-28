@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockPro — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a;
+  --surface:#111827;
+  --card:#161d2f;
+  --border:#1e2d4a;
+  --accent:#3b82f6;
+  --accent2:#06b6d4;
+  --success:#10b981;
+  --danger:#ef4444;
+  --text:#f1f5f9;
+  --muted:#64748b;
+  --input:#1a2540;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+
+/* Background animated */
+.bg-canvas{position:fixed;inset:0;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.3;animation:float 8s ease-in-out infinite}
+.orb-1{width:500px;height:500px;background:radial-gradient(circle,#3b82f6,transparent);top:-100px;left:-100px;animation-delay:0s}
+.orb-2{width:400px;height:400px;background:radial-gradient(circle,#06b6d4,transparent);bottom:-100px;right:-50px;animation-delay:-3s}
+.orb-3{width:300px;height:300px;background:radial-gradient(circle,#8b5cf6,transparent);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-5s}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.05)}}
+
+/* Grid bg */
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.3}
+
+.container{position:relative;z-index:1;width:100%;max-width:440px;padding:1.5rem}
+
+.logo-wrap{text-align:center;margin-bottom:2.5rem}
+.logo{display:inline-flex;align-items:center;gap:.75rem}
+.logo-icon{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:grid;place-items:center;font-size:1.6rem;box-shadow:0 0 30px rgba(59,130,246,.4)}
+.logo-text{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:.75rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-top:.2rem}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;backdrop-filter:blur(20px);box-shadow:0 25px 60px rgba(0,0,0,.5)}
+
+.tabs{display:flex;gap:.5rem;background:var(--input);border-radius:10px;padding:.3rem;margin-bottom:2rem}
+.tab{flex:1;padding:.6rem;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;border-radius:8px;cursor:pointer;transition:all .25s}
+.tab.active{background:var(--accent);color:#fff;box-shadow:0 0 15px rgba(59,130,246,.4)}
+
+.form-section{display:none}
+.form-section.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.form-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:.4rem}
+.form-subtitle{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+
+.field{margin-bottom:1.2rem}
+.field label{display:block;font-size:.8rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+.field input,.field select{
+  width:100%;padding:.85rem 1rem;
+  background:var(--input);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.95rem;
+  outline:none;transition:all .2s
+}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.field input::placeholder{color:var(--muted)}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+.btn{
+  width:100%;padding:1rem;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:none;border-radius:10px;
+  color:#fff;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;
+  cursor:pointer;transition:all .25s;letter-spacing:.02em;
+  position:relative;overflow:hidden
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(59,130,246,.4)}
+.btn:active{transform:translateY(0)}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.15),transparent);pointer-events:none}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.msg{padding:.8rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem;display:none}
+.msg.error{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.msg.success{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+.msg.show{display:block}
+
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.footer{text-align:center;margin-top:1.5rem;font-size:.8rem;color:var(--muted)}
+.footer span{color:var(--accent);font-weight:500}
+
+@media(max-width:480px){.card{padding:1.8rem 1.5rem}}
+</style>
+</head>
+<body>
+<div class="bg-canvas">
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+  <div class="logo-wrap">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+      </div>
+      <div>
+        <div class="logo-text">StockPro</div>
+        <div class="logo-sub">Gestão de Estoque</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Entrar</button>
+      <button class="tab" onclick="switchTab('cadastro')">Cadastrar</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="form-section active" id="tab-login">
+      <div class="form-title">Bem-vindo de volta</div>
+      <div class="form-subtitle">Acesse sua conta para gerenciar o estoque</div>
+      <div class="msg" id="msg-login"></div>
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn" id="btn-login" onclick="fazerLogin()">Entrar no Sistema</button>
+    </div>
+
+    <!-- CADASTRO -->
+    <div class="form-section" id="tab-cadastro">
+      <div class="form-title">Criar conta</div>
+      <div class="form-subtitle">Preencha os dados para acessar o sistema</div>
+      <div class="msg" id="msg-cadastro"></div>
+      <div class="field">
+        <label>Nome completo</label>
+        <input type="text" id="cad-nome" placeholder="Seu nome completo">
+      </div>
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" id="cad-email" placeholder="seu@email.com">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Senha</label>
+          <input type="password" id="cad-senha" placeholder="Mínimo 6 dígitos">
+        </div>
+        <div class="field">
+          <label>Confirmar</label>
+          <input type="password" id="cad-confirma" placeholder="Repetir senha">
+        </div>
+      </div>
+      <button class="btn" id="btn-cadastro" onclick="fazerCadastro()">Criar minha conta</button>
+    </div>
+  </div>
+
+  <div class="footer">StockPro v2.0 · <span>© 2024 Todos os direitos reservados</span></div>
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='cadastro')));
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-cadastro').classList.toggle('active', tab==='cadastro');
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = `msg ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+async function fazerLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  if (!email || !senha) return showMsg('msg-login','Preencha todos os campos','error');
+  const btn = document.getElementById('btn-login');
+  btn.innerHTML = '<span class="spinner"></span>Entrando...';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, senha})
+    });
+    const d = await r.json();
+    if (r.ok) { window.location.href = '/dashboard'; }
+    else { showMsg('msg-login', d.erro || 'Erro ao entrar', 'error'); }
+  } catch(e) { showMsg('msg-login','Erro de conexão','error'); }
+  finally { btn.innerHTML = 'Entrar no Sistema'; btn.disabled = false; }
+}
+
+async function fazerCadastro() {
+  const nome = document.getElementById('cad-nome').value.trim();
+  const email = document.getElementById('cad-email').value.trim();
+  const senha = document.getElementById('cad-senha').value;
+  const confirma = document.getElementById('cad-confirma').value;
+  if (!nome||!email||!senha) return showMsg('msg-cadastro','Preencha todos os campos','error');
+  if (senha !== confirma) return showMsg('msg-cadastro','As senhas não coincidem','error');
+  if (senha.length < 6) return showMsg('msg-cadastro','Senha deve ter pelo menos 6 caracteres','error');
+  const btn = document.getElementById('btn-cadastro');
+  btn.innerHTML = '<span class="spinner"></span>Criando...';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/cadastro', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({nome, email, senha})
+    });
+    const d = await r.json();
+    if (r.ok) {
+      showMsg('msg-cadastro','Conta criada! Faça login.','success');
+      setTimeout(() => switchTab('login'), 2000);
+    } else { showMsg('msg-cadastro', d.erro || 'Erro ao cadastrar', 'error'); }
+  } catch(e) { showMsg('msg-cadastro','Erro de conexão','error'); }
+  finally { btn.innerHTML = 'Criar minha conta'; btn.disabled = false; }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('tab-login').classList.contains('active')) fazerLogin();
+    else fazerCadastro();
+  }
+});
+</script>
+</body>
+</html>

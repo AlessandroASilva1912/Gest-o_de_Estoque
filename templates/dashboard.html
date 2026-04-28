@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockPro — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-icon" id="logo-svg"></div>
+      <div>
+        <div class="logo-text">StockPro</div>
+        <div class="logo-ver">v2.0</div>
+      </div>
+    </div>
+    <button class="sidebar-toggle" id="toggle-btn" onclick="toggleSidebar()" id="btn-toggle"></button>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-group-label">Principal</div>
+    <a class="nav-item active" data-page="dashboard" onclick="loadPage('dashboard')">
+      <span class="nav-icon" id="nav-dashboard"></span><span class="nav-label">Dashboard</span>
+    </a>
+
+    <div class="nav-group-label">Cadastros</div>
+    <a class="nav-item" data-page="produtos" onclick="loadPage('produtos')">
+      <span class="nav-icon" id="nav-produtos"></span><span class="nav-label">Produtos</span>
+    </a>
+    <a class="nav-item" data-page="fornecedores" onclick="loadPage('fornecedores')">
+      <span class="nav-icon" id="nav-fornecedores"></span><span class="nav-label">Fornecedores</span>
+    </a>
+    <a class="nav-item" data-page="categorias" onclick="loadPage('categorias')">
+      <span class="nav-icon" id="nav-categorias"></span><span class="nav-label">Categorias</span>
+    </a>
+
+    <div class="nav-group-label">Movimentação</div>
+    <a class="nav-item" data-page="entrada" onclick="loadPage('entrada')">
+      <span class="nav-icon" id="nav-entrada"></span><span class="nav-label">Entrada</span>
+    </a>
+    <a class="nav-item" data-page="saida" onclick="loadPage('saida')">
+      <span class="nav-icon" id="nav-saida"></span><span class="nav-label">Saída</span>
+    </a>
+    <a class="nav-item" data-page="historico" onclick="loadPage('historico')">
+      <span class="nav-icon" id="nav-historico"></span><span class="nav-label">Histórico</span>
+    </a>
+
+    <div class="nav-group-label">Análise</div>
+    <a class="nav-item" data-page="relatorios" onclick="loadPage('relatorios')">
+      <span class="nav-icon" id="nav-relatorios"></span><span class="nav-label">Relatórios</span>
+    </a>
+    <a class="nav-item" data-page="alertas" onclick="loadPage('alertas')">
+      <span class="nav-icon" id="nav-alertas"></span><span class="nav-label">Alertas</span>
+      <span class="badge" id="badge-alertas">0</span>
+    </a>
+
+    <div class="nav-group-label">Sistema</div>
+    <a class="nav-item" data-page="usuarios" onclick="loadPage('usuarios')">
+      <span class="nav-icon" id="nav-usuarios"></span><span class="nav-label">Usuários</span>
+    </a>
+    <a class="nav-item" onclick="sair()">
+      <span class="nav-icon" id="nav-sair"></span><span class="nav-label">Sair</span>
+    </a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap" id="main-wrap">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="toggleSidebar()" id="btn-menu"></button>
+      <div class="breadcrumb" id="breadcrumb">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-wrap">
+        <input class="search" type="text" placeholder="Buscar produto..." id="global-search" oninput="globalSearch(this.value)">
+        <span class="search-icon" id="top-search-icon"></span>
+        <div class="search-results" id="search-results"></div>
+      </div>
+      <div class="notif-btn" onclick="loadPage('alertas')" title="Alertas" id="top-bell">
+        <span class="notif-count" id="notif-count">0</span>
+      </div>
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-info">
+          <span class="user-name" id="user-name">...</span>
+          <span class="user-role" id="user-role">...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content" id="page-content">
+    <div class="loading-page"><div class="spin"></div></div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-box" id="modal-box">
+    <div class="modal-header">
+      <h3 id="modal-title">Título</h3>
+      <button class="modal-close" onclick="closeModal()" id="btn-modal-close"></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script src="/static/js/icons.js"></script>
+<script src="/static/js/app.js"></script>
+<script>
+// Injeta ícones SVG nos elementos estáticos do HTML após carregar
+document.addEventListener('DOMContentLoaded', function() {
+  var map = {
+    'logo-svg':        icon('logo'),
+    'btn-toggle':      icon('chevronLeft'),
+    'nav-dashboard':   icon('dashboard'),
+    'nav-produtos':    icon('produtos'),
+    'nav-fornecedores':icon('fornecedores'),
+    'nav-categorias':  icon('categorias'),
+    'nav-entrada':     icon('entrada'),
+    'nav-saida':       icon('saida'),
+    'nav-historico':   icon('historico'),
+    'nav-relatorios':  icon('relatorios'),
+    'nav-alertas':     icon('alertas'),
+    'nav-usuarios':    icon('usuarios'),
+    'nav-sair':        icon('sair'),
+    'btn-menu':        icon('menu'),
+    'top-search-icon': icon('search'),
+    'top-bell':        icon('bell'),
+    'btn-modal-close': icon('close'),
+  };
+  Object.keys(map).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      // preserve existing children (like notif-count span inside top-bell)
+      if (id === 'top-bell') {
+        var count = el.querySelector('#notif-count');
+        el.innerHTML = map[id];
+        if (count) el.appendChild(count);
+      } else {
+        el.innerHTML = map[id];
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
