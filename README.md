@@ -22,7 +22,6 @@
 - [API Endpoints](#-api-endpoints)
 - [Banco de Dados](#-banco-de-dados)
 - [Contribuindo](#-contribuindo)
-- [Licença](#-licença)
 
 ---
 
@@ -147,8 +146,8 @@ stockpro/
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/stockpro.git
-cd stockpro
+git clone https://github.com/AlessandroASilva1912/Gest-o_de_Estoque.git
+cd Gest-o_de_Estoque
 ```
 
 ### 2. (Recomendado) Crie um ambiente virtual
