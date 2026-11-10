@@ -204,7 +204,7 @@ async function pageDashboard() {
 
   document.getElementById('page-content').innerHTML =
     '<div class="page-header">' +
-      '<div><div class="page-title">Dashboard</div><div class="page-sub">Visão geral do estoque em tempo real</div></div>' +
+      '<div><span class="hero-kicker">STOCKPRO / OPERAÇÃO</span><div class="page-title">Visão geral do estoque</div><div class="page-sub">Acompanhe produtos, movimentações e alertas</div></div>' +
       '<button class="btn btn-ghost" onclick="loadPage(\'dashboard\')">' + icon('refresh') + 'Atualizar</button>' +
     '</div>' +
     '<div class="stats-grid">' +
